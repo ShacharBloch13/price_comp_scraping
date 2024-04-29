@@ -27,7 +27,9 @@ def setup_driver():
     """Configures and returns a Selenium WebDriver."""
     options = Options()
     options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
-    options.add_argument(f'user-agent={get_user_agent}')  # Sets the user agent to avoid bot detection.
+    UA = get_user_agent()
+    options.add_argument(f'user-agent={UA}')  # Sets the user agent to avoid bot detection.
+    print(f"Using user agent: {UA}")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     service = Service('C:\\Users\\user\\Desktop\\Code_Projects\\chromedriver.exe')  # Update the path to where Chromedriver is installed
     driver = webdriver.Chrome(service=service, options=options)
