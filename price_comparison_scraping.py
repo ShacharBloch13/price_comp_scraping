@@ -23,11 +23,14 @@ def get_user_agent():
     """Returns a random user agent string."""
     return random.choice(UA_list)
 
+
 def setup_driver():
     """Configures and returns a Selenium WebDriver."""
     options = Options()
-    options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
-    UA = get_user_agent()
+    #options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
+    options.add_argument("--incognito")  # Opens Chrome in incognito mode.
+    #UA = get_user_agent()
+    UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={UA}')  # Sets the user agent to avoid bot detection.
     print(f"Using user agent: {UA}")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -74,15 +77,24 @@ def scrape_product_data(product_name):
             wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'h4.sku-title a')))
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             product_element = soup.find('h4', class_='sku-title').find('a') if soup.find('h4', class_='sku-title') else None
-            product_title = product_element.text.strip() if product_element else 'Product not found'
+            #product_title = product_element.text.strip() if product_element else 'Product not found'
             price_element = soup.find('div', class_='priceView-hero-price priceView-customer-price').find('span', {"aria-hidden": "true"}) if soup.find('div', class_='priceView-hero-price priceView-customer-price') else None
-            product_price = price_element.text.strip() if price_element else 'Price not found'
+            #product_price = price_element.text.strip() if price_element else 'Price not found'
    
         elif site == 'Walmart':
             print(url)
+            driver.execute_script("window.scrollTo(0, 100)")  # Scroll down to avoid captcha
+            driver.execute_script("window.scrollTo(100, 0)")
             driver.save_screenshot('debug_screenshot_walmart.png')
-            product_element = soup.find('a', class_='product-title-link line-clamp line-clamp-2')
-            price_element = soup.find('span', class_='price display-inline-block arrange-fit price price-main')
+            try:
+                product = driver.find_element(By.CSS_SELECTOR, '[data-item-id]')
+                product_element = product.find_element(By.CSS_SELECTOR, '[data-automation-id="product-title"]')
+                price_element = product.find_element(By.CSS_SELECTOR, '[data-automation-id="product-price"]')
+                #price_text = price_element.text
+                #product_title = product_element.text.strip()  # Store text in a different variable
+                print("Product and price fetched from Walmart")
+            except Exception as e:
+                print("Error fetching from Walmart:", e)
         elif site == 'Newegg':
             print(url)
             driver.save_screenshot('debug_screenshot_newegg.png')
