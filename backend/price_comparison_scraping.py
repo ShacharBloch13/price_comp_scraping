@@ -20,10 +20,9 @@ def get_user_agent():
 def setup_driver():
     """Configures and returns a Selenium WebDriver."""
     options = Options()
-    #options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
+    options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
     options.add_argument("--incognito")  # Opens Chrome in incognito mode.
     UA = get_user_agent()
-    #UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={UA}')  # Sets the user agent to avoid bot detection.
     print(f"Using user agent: {UA}")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -72,9 +71,7 @@ def scrape_product_data(product_name):
             wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'h4.sku-title a')))
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             product_element = soup.find('h4', class_='sku-title').find('a') if soup.find('h4', class_='sku-title') else None
-            #product_title = product_element.text.strip() if product_element else 'Product not found'
             price_element = soup.find('div', class_='priceView-hero-price priceView-customer-price').find('span', {"aria-hidden": "true"}) if soup.find('div', class_='priceView-hero-price priceView-customer-price') else None
-            #product_price = price_element.text.strip() if price_element else 'Price not found'
             url = driver.current_url
    
         elif site == 'Walmart':
@@ -115,8 +112,7 @@ def scrape_product_data(product_name):
 
 # Main function to test the scraping function
 if __name__ == "__main__":
-    # product_name = "Sony XR85X93L 85\" 4K Mini LED Smart Google TV with PS5 Features (2023)"
-    product_name = "Acoustic Guitar"
+    product_name = "Sony XR85X93L 85\" 4K Mini LED Smart Google TV with PS5 Features (2023)"
     data = scrape_product_data(product_name)
     for result in data:
         print(result)
