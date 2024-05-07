@@ -57,7 +57,7 @@ def get_recommendation(api_key, product_name):
 def setup_driver():
     """Configures and returns a Selenium WebDriver."""
     options = Options()
-    #options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
+    options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
     options.add_argument("--incognito")  # Opens Chrome in incognito mode.
     UA = get_user_agent()
     options.add_argument(f'user-agent={UA}')  # Sets the user agent to avoid bot detection.
@@ -142,17 +142,15 @@ def scrape_product_data(product_name):
             'Item Title Name': item_title,
             'Price(USD)': price,
             'Go to website:': url
-            #'recommendation': get_recommendation(api_key, product_name)['choices'][0]['message']['content']
+
         })
-    #recommendation = get_recommendation(api_key, product_name)    #trying to debug
-    #results.append({'recommendation': recommendation['choices'][0]['message']['content']})   #trying to debug
+
 
     driver.quit()
     return results
 
 # Main function to test the scraping function
 if __name__ == "__main__":
-    #product_name = "Sony XR85X93L 85\" 4K Mini LED Smart Google TV with PS5 Features (2023)"
     product_name = "iphone 13 case"
     data = scrape_product_data(product_name)
     recommendation_temp = get_recommendation(api_key, product_name)

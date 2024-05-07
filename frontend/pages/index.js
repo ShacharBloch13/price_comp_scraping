@@ -93,10 +93,17 @@ export default function Home() {
           {/* Recommendation display */}
           {recommendation && (
             <div className={styles.recommendationContainer}>
-              <h2 className={styles.h2}>You might also like:</h2>
-              <p className={styles.text}>{recommendation}</p>
+              <h2 className={styles.h2}>Recommended Product</h2>
+              <p className={styles.text}>
+                <a href={`https://www.google.com/search?q=${encodeURIComponent(recommendation)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.recommendationLink}>
+                  {recommendation}
+                </a>
+              </p>
             </div>
-    )}
+          )}
     </div>
   );
 }
