@@ -5,9 +5,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-import time
 import random
+import requests
+import json
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+api_key = os.getenv('PRICE_COMP_OPENAI_API')
 UA_list = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.81",
            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 OPR/109.0.0.0"]
@@ -17,10 +22,42 @@ def get_user_agent():
     return random.choice(UA_list)
 
 
+
+def get_recommendation(api_key, product_name):
+    url = 'https://api.openai.com/v1/chat/completions'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {api_key}'
+    }
+    body = json.dumps({
+        'messages': [
+            {'role': 'system',
+             'content': 'You are an experienced salesperson looking to recommend a product to a customer, based on what he searched before. You are going to want to recommend products that may be related to the product he searched for. Return only 1 product by its name. For example, if someone looked for an acoustic guitar, you may want to recommend a guitar pick, and your response should be "Guitar Pick".'
+             },
+            {'role': 'user',
+             'content': f'I am looking to buy {product_name}. Can you recommend a product for me?'
+            }
+        ],
+        'model': 'gpt-3.5-turbo',
+        'temperature': 0.5
+    })
+
+    try:
+        response = requests.post(url, headers=headers, data=body)
+        response.raise_for_status()  # Raises an HTTPError for bad responses
+        return response.json()
+    except requests.exceptions.HTTPError as http_err:
+        if response.status_code == 401:
+            print("Looks like your API key is incorrect. Please check your API key and try again.")
+        else:
+            print(f"Failed to fetch. Status code: {response.status_code}")
+    except Exception as err:
+        print(f"An error occurred: {err}")
+
 def setup_driver():
     """Configures and returns a Selenium WebDriver."""
     options = Options()
-    options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
+    #options.add_argument("--headless")  # Runs Chrome in headless mode for automation.
     options.add_argument("--incognito")  # Opens Chrome in incognito mode.
     UA = get_user_agent()
     options.add_argument(f'user-agent={UA}')  # Sets the user agent to avoid bot detection.
@@ -105,14 +142,22 @@ def scrape_product_data(product_name):
             'Item Title Name': item_title,
             'Price(USD)': price,
             'Go to website:': url
+            #'recommendation': get_recommendation(api_key, product_name)['choices'][0]['message']['content']
         })
+    #recommendation = get_recommendation(api_key, product_name)    #trying to debug
+    #results.append({'recommendation': recommendation['choices'][0]['message']['content']})   #trying to debug
 
     driver.quit()
     return results
 
 # Main function to test the scraping function
 if __name__ == "__main__":
-    product_name = "Sony XR85X93L 85\" 4K Mini LED Smart Google TV with PS5 Features (2023)"
+    #product_name = "Sony XR85X93L 85\" 4K Mini LED Smart Google TV with PS5 Features (2023)"
+    product_name = "iphone 13 case"
     data = scrape_product_data(product_name)
+    recommendation_temp = get_recommendation(api_key, product_name)
+    recommendation = recommendation_temp['choices'][0]['message']['content']
+    print(api_key) # Print the API key to check if it is loaded correctly
     for result in data:
         print(result)
+    

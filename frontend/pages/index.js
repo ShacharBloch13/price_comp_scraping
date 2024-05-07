@@ -4,6 +4,7 @@ import styles from '../styles/Table.module.css';
 
 export default function Home() {
   const [productName, setProductName] = useState('');
+  const [recommendation, setRecommendation] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -13,11 +14,12 @@ export default function Home() {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`http://127.0.0.1:8080/search`, {
+      const response = await axios.get(`http://127.0.0.1:8090/search`, {
         params: { product_name: productName }
       });
       console.log(response.data);
       setResults(response.data.data);  // Adjust based on the actual API response structure
+      setRecommendation(response.data.recommendation);// might be an issue - check
     } catch (error) {
       console.error('Failed to fetch data:', error);
       setError('Failed to fetch data. Please try again.');
@@ -79,6 +81,7 @@ export default function Home() {
                     </td>
          
               </tr>
+            
             ))
           ) : (
             <tr>
@@ -87,6 +90,13 @@ export default function Home() {
           )}
         </tbody>
       </table>
+          {/* Recommendation display */}
+          {recommendation && (
+            <div className={styles.recommendationContainer}>
+              <h2 className={styles.h2}>You might also like:</h2>
+              <p className={styles.text}>{recommendation}</p>
+            </div>
+    )}
     </div>
   );
 }
