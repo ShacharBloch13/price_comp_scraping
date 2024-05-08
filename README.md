@@ -30,15 +30,15 @@ To use the application, you need:
 
 # Installation Instructions and starting the program
 
-   ``` git clone https://github.com/ShacharBloch13/price_comp_scraping/with_next.js ```
-   ``` cd backend ```
-   ```python main.py```
-   ``` cd .. ```
-   ``` cd frontend ```
-   ``` npm run dev ```
+1)  ``` git clone https://github.com/ShacharBloch13/price_comp_scraping/with_next.js ```
+2) ``` cd backend ```
+3) ```python main.py```
+4) ``` cd .. ```
+5) ``` cd frontend ```
+6) ``` npm run dev ```
 
 # directory tree
-
+```
 ├── .pytest_cache/
 ├── backend/
 │   ├── .env
@@ -54,7 +54,7 @@ To use the application, you need:
 │   └── pages/
 │       ├── _app.js
 │       └── index.js
-
+```
 # How to use
 1) Start both the backend and frontend as described.
 2) Access the frontend through your browser at http://localhost:3000 (default URL for Next.js apps).
