@@ -37,7 +37,7 @@ To use the application, you need:
 5) ``` cd frontend ```
 6) ``` npm run dev ```
 
-# directory tree
+# Directory tree
 ```
 ├── .pytest_cache/
 ├── backend/
